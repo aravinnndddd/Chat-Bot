@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gemini Chat Bot</title>
+
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -13,25 +14,25 @@
         width: 400px;
         margin: 50px auto;
         padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 8px;
         background: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
       #chat-box {
         height: 300px;
         overflow-y: auto;
         border: 1px solid #ddd;
-        padding: 5px;
+        padding: 8px;
         margin-bottom: 10px;
         background: #fafafa;
       }
       #user-input {
         width: 75%;
-        padding: 5px;
+        padding: 6px;
       }
       #send-btn {
         width: 22%;
-        padding: 5px;
+        padding: 6px;
         background: #4caf50;
         color: white;
         border: none;
@@ -41,16 +42,17 @@
         background: #45a049;
       }
       .message {
-        margin: 5px 0;
+        margin: 6px 0;
       }
       .user-message {
-        color: rgb(0, 255, 162);
+        color: #007aff;
       }
       .ai-message {
-        color: green;
+        color: #2e7d32;
       }
     </style>
   </head>
+
   <body>
     <div id="chat-container">
       <div id="chat-box"></div>
@@ -63,7 +65,8 @@
       const userInput = document.getElementById("user-input");
       const sendBtn = document.getElementById("send-btn");
 
-      const API_KEY = "AIzaSyCLKg8tXRMHQfEcClAI1mH-lmk3YbG0rqs"; 
+   
+      const API_KEY = "AIzaSyCNlRvUQrWAXoHY-XUJKCrJLhJClRoh7Xk";
 
       async function sendMessage() {
         const message = userInput.value.trim();
@@ -83,7 +86,10 @@
               },
               body: JSON.stringify({
                 contents: [{ parts: [{ text: message }] }],
-                generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
+                generationConfig: {
+                  temperature: 0.7,
+                  maxOutputTokens: 200,
+                },
               }),
             }
           );
@@ -91,30 +97,28 @@
           const data = await res.json();
 
           const reply =
-            data?.candidates?.[0]?.content?.parts[0]?.text ||
+            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
             "No response from AI";
 
           appendMessage("Gemini", reply);
-        } catch (err) {
-          console.error(err);
-          appendMessage("System", "Error connecting to AI.");
+        } catch (error) {
+          console.error(error);
+          appendMessage("System", "Error connecting to AI");
         }
       }
 
       function appendMessage(sender, text) {
         const msgDiv = document.createElement("div");
-        msgDiv.classList.add(
-          "message",
-          sender === "You" ? "user-message" : "ai-message"
-        );
+        msgDiv.className =
+          "message " + (sender === "You" ? "user-message" : "ai-message");
         msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
         chatBox.appendChild(msgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
       }
 
       sendBtn.addEventListener("click", sendMessage);
-      userInput.addEventListener("keypress", (event) => {
-        if (event.key === "Enter") sendMessage();
+      userInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") sendMessage();
       });
     </script>
   </body>
